@@ -5,11 +5,11 @@ from natsort import natsorted  # For natural sorting like T.1, T.2, ..., T.10
 # -------------------------------------------------------------------------------- #
 #                                  CONFIGURATION                                   #
 # -------------------------------------------------------------------------------- #
-IMAGE_FOLDER_PATH = '/pscratch/sd/k/kittiya/mean_project/vpic2/code_python2/images'
-OUTPUT_PATH = "/pscratch/sd/k/kittiya/mean_project/vpic2/code_python2/videos"
+IMAGE_FOLDER_PATH = 'C:/Users/nongj/Pictures'
+OUTPUT_PATH = "C:/Users/nongj/Desktop/Plasma_shock_simulation_backup/my_code/1.0/sample_video"
 
-filename_prefixes = '_'
-FPS = 10                # Frames per second for the output video
+filename_prefixes = 'f'
+FPS = 1                # Frames per second for the output video
 OPTION = 1
 
 # -------------------------------------------------------------------------------- #
@@ -31,7 +31,7 @@ def create_video_from_images():
     reference_shape = first_image.shape
     print(f"[Info] Reference image shape: {reference_shape}")
 
-    writer = imageio.get_writer(f"{OUTPUT_PATH}/{name}.mp4", fps=FPS)
+    writer = imageio.get_writer(f"{name}.mp4", fps=FPS)
     writer.close()
     print(f"[Done] Video saved to: {OUTPUT_PATH}/{name}.mp4")
 
