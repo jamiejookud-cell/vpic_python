@@ -5,13 +5,17 @@ from code_python.scripts.config.folder_paths import FOLDER_PATH
 # Prepare for dumping files
 CODE_FILES_PATH  = f'{FOLDER_PATH}/scripts'
 
-CALCULATION_PATH   = [
+LIST   = [
+    # f"{CODE_FILES_PATH}/config/folder_paths.py",
     f"{CODE_FILES_PATH}/config/parameters.py",
     f"{CODE_FILES_PATH}/setup/timestep_setup.py",
     f"{CODE_FILES_PATH}/setup/calculation_setup.py",
+    # f"{CODE_FILES_PATH}/setup/plotting_setup.py",
     f"{CODE_FILES_PATH}/preprocessing/get_hdf5_data.py",
+    # f"{CODE_FILES_PATH}/preprocessing/plotting_functions.py,
+    # f"{CODE_FILES_PATH}/preprocessing/shock_speed_calculation.py,
     f"{CODE_FILES_PATH}/preprocessing/custom_advanced_functions.py",
-    f"{CODE_FILES_PATH}/mainloop/run_calculation.py",
+    f"{CODE_FILES_PATH}/mainloop/main.py",
 ]
 
 OUTPUT_FILE_PATH = f'{FOLDER_PATH}/records'
@@ -24,7 +28,7 @@ def dump_process(txt: str):
     print(txt)
 
 
-def save(time_start: datetime, output_path):
+def save(time_start: datetime):
     now_local = datetime.now().astimezone()
     offset = now_local.strftime("%z")[:3]
 
@@ -36,14 +40,10 @@ def save(time_start: datetime, output_path):
     output_file = f"{OUTPUT_FILE_PATH}/run_{time_output}_UTC{offset}.txt"
 
     with open(output_file, "w", encoding="utf-8") as outfile:
-        FILES_TO_PRINT = []
-        if output_path == "calculation_path":
-            FILES_TO_PRINT = CALCULATION_PATH
-        else:
-            raise ValueError("output_path enables 'calculation_path', 'plotting_path' and 'all_path'.")
-
+        FILES_TO_PRINT = LIST
         outfile.write(f"Code dump created on {time_start_str} - {time_end_str} {date_str} (UTC{offset})\n")
-        outfile.write("────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────\n")
+        outfile.write("Code files:\n\n"
+                      "────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────\n")
 
         for filename in FILES_TO_PRINT:
             filepath = os.path.join(CODE_FILES_PATH, filename)

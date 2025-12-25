@@ -1,7 +1,9 @@
-Code dump created on 02:07:37 - 02:07:39 2025/12/25 (UTC+07)
+Code dump created on 15:24:10 - 15:24:13 2025/12/25 (UTC+07)
+Code files:
+
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
-═══════ C:/DEV/python/vpic_python/code_python/scripts/config/parameters.py ═══════
+═══════ C:/DEV/local_repo/vpic_python/code_python/scripts/config/parameters.py ═══════
 
 # ------------------------------ Simulation Parameters ------------------------------ #
 nx: int = 8192                 # grid cell x (length code)
@@ -24,7 +26,7 @@ timestep_interval: int = 78    # (time code)
 
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
-═══════ C:/DEV/python/vpic_python/code_python/scripts/setup/timestep_setup.py ═══════
+═══════ C:/DEV/local_repo/vpic_python/code_python/scripts/setup/timestep_setup.py ═══════
 
 # ------------------------------------- #
 #      Timestep range configuration     #
@@ -59,7 +61,7 @@ SKIP_TO_FOLDER: int             = -1
 
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
-═══════ C:/DEV/python/vpic_python/code_python/scripts/setup/calculation_setup.py ═══════
+═══════ C:/DEV/local_repo/vpic_python/code_python/scripts/setup/calculation_setup.py ═══════
 
 # CONST
 V_SH: float = 0.05609 # [length (de) / time (wpe-1)]
@@ -88,7 +90,7 @@ IS_EXPORT_DATA_TO_CSV: bool                 = True
 
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
-═══════ C:/DEV/python/vpic_python/code_python/scripts/preprocessing/get_hdf5_data.py ═══════
+═══════ C:/DEV/local_repo/vpic_python/code_python/scripts/preprocessing/get_hdf5_data.py ═══════
 
 """
 NOTE: Please ensure that you have tested all folders by using _check_corrupted_hdf5_folders.py
@@ -317,7 +319,7 @@ def read_timestep(shock_folder: str) -> dict:
 
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
-═══════ C:/DEV/python/vpic_python/code_python/scripts/preprocessing/custom_advanced_functions.py ═══════
+═══════ C:/DEV/local_repo/vpic_python/code_python/scripts/preprocessing/custom_advanced_functions.py ═══════
 
 import numpy as np
 
@@ -342,44 +344,8 @@ def cross_product(a:list[np.ndarray], b:list[np.ndarray], component:str=""):
     cz = ax * by - ay * bx
     return np.array([cx, cy, cz])
 
-
-# grid difference
-# def partial(A: np.ndarray, component:str = ""):
-#     """
-#     Args:
-#         A: 2D numpy array (x,z)
-#         component: x, z
-#
-#     Returns: partial component x or z
-#
-#     """
-#     #    (1) - - - (2) -> x
-#     #     |         |
-#     #     |         |
-#     #     |         |
-#     #    (4) - - - (3)
-#     #     |
-#     #     v
-#     #     z
-#     #
-#     # NOTE: We use numpy.roll to compute ΔU in x and z direction.
-#     # When the indices reach i_max or k_max, it will cause the final index minus the first index.
-#     # For example, ΔU in z direction
-#     # ΔU_z = u[i_max][k_max + 1] - u[i_max][k_max] -> ΔU_z = u[i_max][0] - u[i_max][k_max]
-#     # !!! PLEASE REMEMBER TO REMOVE ERROR ELEMENTS - 2d_array = 2d_array[:-1, :-1] !!!
-#
-#     A1 = A
-#     A2 = np.roll(A1, -1, axis=0) # Shift (x, z)   -> (x+1, z)
-#     A4 = np.roll(A1, -1, axis=1) # shift (x, z)   -> (x, z+1)
-#
-#     # Note, we know in this simulation Δx = Δz = 0.1
-#     if component == "x":
-#         return (A2 - A1) / 0.1
-#     elif component == "z":
-#         return (A4 - A1) / 0.1
-
-# centered grid difference
 def partial(arr_2d: np.ndarray, component: str = ""):
+    # calculate using centered-grid difference
     # [1:-1, 1:-1]
     dx = 0.1
 
@@ -413,6 +379,7 @@ def lorentz_transformation_tensor(ux:np.ndarray, uy:np.ndarray, uz:np.ndarray):
     uu = ux ** 2 + uy ** 2 + uz ** 2 # u.u = u^2
     gamma_u = (1 - uu) ** -0.5
 
+    # arbitrary velocity
     m00 = gamma_u
     m11 = 1 + (gamma_u - 1) * ux * ux / uu
     m22 = 1 + (gamma_u - 1) * uy * uy / uu
@@ -441,17 +408,21 @@ def lorentz_transformation_tensor(ux:np.ndarray, uy:np.ndarray, uz:np.ndarray):
 
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
-═══════ C:/DEV/python/vpic_python/code_python/scripts/mainloop/run_calculation.py ═══════
+═══════ C:/DEV/local_repo/vpic_python/code_python/scripts/mainloop/main.py ═══════
 
 from rich.progress import Progress # Show run pregress
 from code_python.scripts.config.parameters import *
 from code_python.scripts.setup.calculation_setup import *
+from code_python.scripts.setup.plotting_setup import *
 from code_python.scripts.preprocessing.get_hdf5_data import folders, folder_count, read_timestep
+from code_python.scripts.preprocessing.plotting_functions import PlotFlowFigure
+import code_python.scripts.preprocessing.shock_speed_calculation as shock_speed_calculation
+from code_python.scripts.preprocessing.custom_advanced_functions import *
 import code_python.scripts.dumping_backup_python_output as backup
-import code_python.scripts.mainloop.shock_speed_calculation as shock_speed_calculation
 
 DATE_START = backup.datetime.now()
 
+backup.dump_process("▀▄▀▄▀▄ MAINLOOP ▀▄▀▄▀▄")
 with (Progress() as progress):
     task = progress.add_task(f"[white] processing...", total=folder_count)
     for folder_index, folder_name in enumerate(folders):
@@ -506,86 +477,116 @@ with (Progress() as progress):
             shock_speed_calculation.shock_times.append(t_peak)
 
         # Change data to box frame (Lorentz transformation frame)
-        if IS_CALCULATING_LORENTZ_TRANSFORMATION:
+        if not IS_CALCULATING_LORENTZ_TRANSFORMATION:
+            backup.dump_process("(Disabled 'IS_CALCULATING_LORENTZ_TRANSFORMATION')")
+        else:
+            x0, length = box_frame[0], box_frame[2]
+            v = target_velocity
             # Use gamma = 1 / sqrt(1 - v^2), where c = 1 (normalized units)
-            GAMMA = (1 - target_velocity ** 2) ** (-1 / 2)
-            x_step = int(V_SH * (1 / dx_de) * dt_wpe * current_timestep)
-            box_index = [box_frame[0] + x_step, box_frame[0] + x_step + box_frame[2]]
+            gamma = (1 - v ** 2) ** (-1 / 2)
+            x_step = int(v * (1 / dx_de) * dt_wpe * current_timestep)
+            box_index = [x0 + x_step, (x0 + x_step) + length]
             # Ensure box frame insides simulation frame
             if box_index[0] < 0 or box_index[1] > nx:
                 progress.update(task, advance=1)
                 backup.dump_process(f"Not calculated Lorentz transformation at T.{current_timestep}: box frame outsides simulation frame.")
                 continue
 
-            jx_e = jx_e[box_index[0]: box_index[1], :]
-            jy_e = jy_e[box_index[0]: box_index[1], :]
-            jz_e = jz_e[box_index[0]: box_index[1], :]
-            ke_e = ke_e[box_index[0]: box_index[1], :]
-            px_e = px_e[box_index[0]: box_index[1], :]
-            py_e = py_e[box_index[0]: box_index[1], :]
-            pz_e = pz_e[box_index[0]: box_index[1], :]
-            rho_e = rho_e[box_index[0]: box_index[1], :]
-            txx_e = txx_e[box_index[0]: box_index[1], :]
-            txy_e = txy_e[box_index[0]: box_index[1], :]
-            tyy_e = tyy_e[box_index[0]: box_index[1], :]
-            tyz_e = tyz_e[box_index[0]: box_index[1], :]
-            tzx_e = tzx_e[box_index[0]: box_index[1], :]
-            tzz_e = tzz_e[box_index[0]: box_index[1], :]
+            _jx_e = jx_e[box_index[0]: box_index[1], :]
+            _jy_e = jy_e[box_index[0]: box_index[1], :]
+            _jz_e = jz_e[box_index[0]: box_index[1], :]
+            _ke_e = ke_e[box_index[0]: box_index[1], :]
+            _px_e = px_e[box_index[0]: box_index[1], :]
+            _py_e = py_e[box_index[0]: box_index[1], :]
+            _pz_e = pz_e[box_index[0]: box_index[1], :]
+            _rho_e = rho_e[box_index[0]: box_index[1], :]
+            _txx_e = txx_e[box_index[0]: box_index[1], :]
+            _txy_e = txy_e[box_index[0]: box_index[1], :]
+            _tyy_e = tyy_e[box_index[0]: box_index[1], :]
+            _tyz_e = tyz_e[box_index[0]: box_index[1], :]
+            _tzx_e = tzx_e[box_index[0]: box_index[1], :]
+            _tzz_e = tzz_e[box_index[0]: box_index[1], :]
 
-            jx_i = jx_i[box_index[0]: box_index[1], :]
-            jy_i = jy_i[box_index[0]: box_index[1], :]
-            jz_i = jz_i[box_index[0]: box_index[1], :]
-            ke_i = ke_i[box_index[0]: box_index[1], :]
-            px_i = px_i[box_index[0]: box_index[1], :]
-            py_i = py_i[box_index[0]: box_index[1], :]
-            pz_i = pz_i[box_index[0]: box_index[1], :]
-            rho_i = rho_i[box_index[0]: box_index[1], :]
-            txx_i = txx_i[box_index[0]: box_index[1], :]
-            txy_i = txy_i[box_index[0]: box_index[1], :]
-            tyy_i = tyy_i[box_index[0]: box_index[1], :]
-            tyz_i = tyz_i[box_index[0]: box_index[1], :]
-            tzx_i = tzx_i[box_index[0]: box_index[1], :]
-            tzz_i = tzz_i[box_index[0]: box_index[1], :]
+            _jx_i = jx_i[box_index[0]: box_index[1], :]
+            _jy_i = jy_i[box_index[0]: box_index[1], :]
+            _jz_i = jz_i[box_index[0]: box_index[1], :]
+            _ke_i = ke_i[box_index[0]: box_index[1], :]
+            _px_i = px_i[box_index[0]: box_index[1], :]
+            _py_i = py_i[box_index[0]: box_index[1], :]
+            _pz_i = pz_i[box_index[0]: box_index[1], :]
+            _rho_i = rho_i[box_index[0]: box_index[1], :]
+            _txx_i = txx_i[box_index[0]: box_index[1], :]
+            _txy_i = txy_i[box_index[0]: box_index[1], :]
+            _tyy_i = tyy_i[box_index[0]: box_index[1], :]
+            _tyz_i = tyz_i[box_index[0]: box_index[1], :]
+            _tzx_i = tzx_i[box_index[0]: box_index[1], :]
+            _tzz_i = tzz_i[box_index[0]: box_index[1], :]
 
-            cex = cex[box_index[0]: box_index[1], :]
-            cey = cey[box_index[0]: box_index[1], :]
-            cez = cez[box_index[0]: box_index[1], :]
-            cbx = cbx[box_index[0]: box_index[1], :]
-            cby = cby[box_index[0]: box_index[1], :]
-            cbz = cbz[box_index[0]: box_index[1], :]
+            _cex = cex[box_index[0]: box_index[1], :]
+            _cey = cey[box_index[0]: box_index[1], :]
+            _cez = cez[box_index[0]: box_index[1], :]
+            _cbx = cbx[box_index[0]: box_index[1], :]
+            _cby = cby[box_index[0]: box_index[1], :]
+            _cbz = cbz[box_index[0]: box_index[1], :]
 
             # Calculate Lorentz transformation (+x direction)
-            rho_i_prime = GAMMA * (rho_i - V_SH * jx_i)
-            jx_i_prime = GAMMA * (jx_i - rho_i * V_SH)
-            jy_i_prime = jy_i
-            jz_i_prime = jz_i
+            rho_i_prime = gamma * (_rho_i - v * _jx_i)
+            jx_i_prime = gamma * (_jx_i - _rho_i * v)
+            jy_i_prime = _jy_i
+            jz_i_prime = _jz_i
 
-            rho_e_prime = GAMMA * (rho_e - V_SH * jx_e)
-            jx_e_prime = GAMMA * (jx_e - rho_e * V_SH)
-            jy_e_prime = jy_e
-            jz_e_prime = jz_e
+            rho_e_prime = gamma * (_rho_e - v * _jx_e)
+            jx_e_prime = gamma * (_jx_e - _rho_e * v)
+            jy_e_prime = _jy_e
+            jz_e_prime = _jz_e
 
-            cex_prime = GAMMA * cex - GAMMA * GAMMA * V_SH / (GAMMA + 1) * (V_SH * cex)
-            cey_prime = GAMMA * (cey - V_SH * cbz)
-            cez_prime = GAMMA * (cez + V_SH * cby)
+            cex_prime = gamma * _cex - gamma * gamma * v / (gamma + 1) * (v * _cex)
+            cey_prime = gamma * (_cey - v * _cbz)
+            cez_prime = gamma * (_cez + v * _cby)
 
-            cbx_prime = GAMMA * cbx - GAMMA * GAMMA * V_SH / (GAMMA + 1) * (V_SH * cbx)
-            cby_prime = GAMMA * (cby + V_SH * cez)
-            cbz_prime = GAMMA * (cbz - V_SH * cey)
+            cbx_prime = gamma * _cbx - gamma * gamma * v / (gamma + 1) * (v * _cbx)
+            cby_prime = gamma * (_cby + v * _cez)
+            cbz_prime = gamma * (_cbz - v * _cey)
 
-        # TODO: Custom advanced function if there any derived calculation
-        if ENABLE_ADVANCED_CALCULATION:
+        if not ENABLE_ADVANCED_CALCULATION:
+            backup.dump_process("(Disabled 'ENABLE_ADVANCED_CALCULATION')")
+        else:
+            # TODO: doing derived calculation
             ...
-            backup.dump_process(f"[{folder_index+1}] Finish add sum T.{current_timestep}")
+            backup.dump_process(f"[{folder_index+1}] Finish calculation T.{current_timestep}")
         # ----------------------------------------------------------------- #
+
+        # ------------------------- PLOTTING PART -------------------------
+        """
+        Enable built-in features:
+        - PlotFlowFigure(timestep, data, vbar, cmap, units)
+        available unit: de, di, wpe, wci
+        prompt example: units = "de wpe" or "wpe de"
+
+        Example usage:
+            fig = PlotFlowFigure(current_timestep, data=rho_i, vbar=(0, 6), cmap=wtdr, units="di wci")
+            fig.show_lorentz_frame() # show outline of box frame
+            fig.save(filename="rho_i") # or fig.show()
+        
+        """
+        fig1 = PlotFlowFigure(current_timestep, data=rho_i, vbar=(0, 6), cmap=wtdr, units="di wci")
+        fig1.show_lorentz_frame(line_reference_ratio=0.5)
+        fig1.draw_line_peak_position()
+        fig1.save("rho_i")
+
+        # ----------------------------------------------------------------- #
+backup.dump_process("▀▄▀▄▀▄ ENDLOOP ▀▄▀▄▀▄")
 
 if IS_CALCULATING_SHOCK_SPEED:
     shock_speed_calculation.show_graph_of_shock_speed_tracking()
 
-if IS_EXPORT_DATA_TO_CSV:
+if not IS_EXPORT_DATA_TO_CSV:
+    backup.dump_process("(Disabled 'IS_EXPORT_DATA_TO_CSV')")
+else:
+    # TODO: For export data
     ...
 
-backup.save(DATE_START, output_path="calculation_path")
+backup.save(DATE_START)
 
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
@@ -597,4 +598,7 @@ backup.save(DATE_START, output_path="calculation_path")
 Process Log:
 
 folder count = 1
-[1] Finish add sum T.64584
+▀▄▀▄▀▄ MAINLOOP ▀▄▀▄▀▄
+[1] Finish calculation T.64584
+Saved C:/DEV/local_repo/vpic_python/code_python/figures/rho_i.png
+▀▄▀▄▀▄ ENDLOOP ▀▄▀▄▀▄

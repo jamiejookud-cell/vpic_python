@@ -11,7 +11,7 @@ SHOCK_DATA_PATH  = "C:/DEV/python/vpic_python/sample_data/V16"
 #    ∟ setup
 #    ∟ preprocessing
 #    ∟ main
-FOLDER_PATH      = "C:/DEV/python/vpic_python/code_python"
+FOLDER_PATH      = "C:/DEV/local_repo/vpic_python/code_python"
 # CSV files output
 CSV_OUTPUT_PATH  = f'{FOLDER_PATH}/csv_files'
 # Output dictionary for saving generated figures
