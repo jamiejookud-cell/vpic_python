@@ -4,9 +4,7 @@ from matplotlib.patches import Rectangle
 from matplotlib.ticker import FuncFormatter # For adjust unit labels
 from code_python.scripts.config.folder_paths import FIG_OUTPUT_PATH
 from code_python.scripts.config.parameters import dx_de, dt_wpe, dt_wci
-from code_python.scripts.setup.timestep_setup import TIMESTEP_RANGE
-from code_python.scripts.setup.calculation_setup import box_frame, target_velocity
-from code_python.scripts.setup.plotting_setup import *
+from code_python.scripts.config.setup import *
 import code_python.scripts.dumping_backup_python_output as backup
 
 def save_figure(filename: str):
@@ -14,6 +12,7 @@ def save_figure(filename: str):
         plt.savefig(f'{FIG_OUTPUT_PATH}/{filename}.png', format='png', dpi=600,
                     bbox_inches='tight', pad_inches=0.2)
         backup.dump_process(f"Saved {FIG_OUTPUT_PATH}/{filename}.png")
+        plt.close()
     else:
         plt.show()
 

@@ -8,8 +8,7 @@ import h5py
 import natsort # Sort folders
 from code_python.scripts.config.folder_paths import SHOCK_DATA_PATH
 from code_python.scripts.config.parameters import nx, nz
-from code_python.scripts.setup.timestep_setup import  TIMESTEP_RANGE, SPECIFIC_TIMESTEP, SKIP_TO_FOLDER
-from code_python.scripts.setup.calculation_setup import box_frame
+from code_python.scripts.config.setup import  TIMESTEP_RANGE, SPECIFIC_TIMESTEP, SKIP_TO_FOLDER, box_frame
 from code_python.scripts.dumping_backup_python_output import dump_process
 
 # ---------------------------------------- #
@@ -113,7 +112,9 @@ dump_process(f"folder count = {folder_count}")
 # ---------------------------------------- #
 #        HDF5 Data Reader Function         #
 # ---------------------------------------- #
-# NOTE: Code runs very fast if we import only necessary files
+"""
+NOTE: Code runs very fast if we import only necessary files
+"""
 def read_timestep(shock_folder: str) -> dict:
     """
     continuity equation and energy-momentum tensor
@@ -146,6 +147,8 @@ def read_timestep(shock_folder: str) -> dict:
         tzx_e = np.squeeze(hdf5_r[f'/Timestep_{current_timestep}/tzx'][:])
         tzz_e = np.squeeze(hdf5_r[f'/Timestep_{current_timestep}/tzz'][:])
 
+        ...
+
     # Importing ion file data, subscript with 'i'
     with h5py.File(ion_file_path_location, 'r') as hdf5_r:
         jx_i = np.squeeze(hdf5_r[f'/Timestep_{current_timestep}/jx'][:])
@@ -163,6 +166,8 @@ def read_timestep(shock_folder: str) -> dict:
         tzx_i = np.squeeze(hdf5_r[f'/Timestep_{current_timestep}/tzx'][:])
         tzz_i = np.squeeze(hdf5_r[f'/Timestep_{current_timestep}/tzz'][:])
 
+        ...
+
     # Importing field file data
     field_file_path_location = (f'{SHOCK_DATA_PATH}/field_hdf5/T.{current_timestep}'
                                 f'/fields_{current_timestep}.h5')
@@ -173,6 +178,8 @@ def read_timestep(shock_folder: str) -> dict:
         cbx = np.squeeze(hdf5_r[f'/Timestep_{current_timestep}/cbx'][:])
         cby = np.squeeze(hdf5_r[f'/Timestep_{current_timestep}/cby'][:])
         cbz = np.squeeze(hdf5_r[f'/Timestep_{current_timestep}/cbz'][:])
+
+        ...
 
     hdf5_data_set = {
         't'     : current_timestep,
