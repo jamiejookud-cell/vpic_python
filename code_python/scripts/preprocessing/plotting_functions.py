@@ -91,14 +91,12 @@ class PlotFlowFigure:
         self.ax.plot(x0 + x + x_step, y0 + y, ':', color='black')
 
     def draw_line_peak_position(self):
-        v = target_velocity
-        x0, y0, length, height = box_frame
-        x_step = int(v * (1 / dx_de) * dt_wpe * (self.timestep + self.start_timestep))
+        y_max = self.data.shape[1]
 
         peak_position = float(np.argmax(np.mean(self.data, axis=1)))
-        x = np.zeros(2) + peak_position
-        y = np.linspace(0, height, 2)
-        self.ax.plot(x0 + x + x_step, y0 + y, color='black')
+        x_peak = np.zeros(2) + peak_position
+        y = np.linspace(0, y_max, 2)
+        self.ax.plot(x_peak, y, color='black')
 
     @staticmethod
     def show():
@@ -107,3 +105,6 @@ class PlotFlowFigure:
     @staticmethod
     def save(filename: str):
         save_figure(filename)
+
+    def title(self, title: str):
+        self.ax.set_title(title)
