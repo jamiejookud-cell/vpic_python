@@ -10,7 +10,7 @@ SHOCK_DATA_PATH  = "C:/DEV/python/vpic_python/sample_data/V16"
 #    ∟ config
 #    ∟ setup
 #    ∟ preprocessing
-#    ∟ main
+#    ∟ mainloop
 FOLDER_PATH      = "C:/DEV/local_repo/vpic_python/code_python"
 # CSV files output
 CSV_OUTPUT_PATH  = f'{FOLDER_PATH}/csv_files'
