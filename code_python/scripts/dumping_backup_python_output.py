@@ -59,10 +59,12 @@ def save(time_start: datetime):
 
             else:
                 outfile.write(f"\n═══════ {filename} (NOT FOUND) ═══════\n\n")
+
         # Separator
         outfile.write("Process Log:\n")
 
         # Process log
         outfile.write(process_txt)
 
-        print(f"Save record to {output_file}")
+        # record output
+        outfile.write(f"\nSave record to {output_file}")
