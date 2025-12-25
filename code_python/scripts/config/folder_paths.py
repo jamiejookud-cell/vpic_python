@@ -8,7 +8,6 @@ SHOCK_DATA_PATH  = "C:/DEV/python/vpic_python/sample_data/V16"
 # ∟ records
 # ∟ scripts
 #    ∟ config
-#    ∟ setup
 #    ∟ preprocessing
 #    ∟ mainloop
 FOLDER_PATH      = "C:/DEV/local_repo/vpic_python/code_python"

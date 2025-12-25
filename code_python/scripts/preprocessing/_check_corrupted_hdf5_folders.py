@@ -4,7 +4,7 @@ import os
 import h5py
 from natsort import natsorted # Sort folders
 from code_python.scripts.config.folder_paths import SHOCK_DATA_PATH
-from code_python.scripts.setup.timestep_setup import TIMESTEP_RANGE, SPECIFIC_TIMESTEP, SKIP_TO_FOLDER
+from code_python.scripts.config.setup import TIMESTEP_RANGE, SPECIFIC_TIMESTEP, SKIP_TO_FOLDER
 # ---------------------------------------- #
 #         Folder Preprocessing             #
 # ---------------------------------------- #
@@ -38,8 +38,8 @@ folder_count = len(folders)
 # ---------------------------------------- #
 #        HDF5 Data Reader Function         #
 # ---------------------------------------- #
-def read_timestep(filename: str):
-    current_timestep = int(filename[2:])
+def read_timestep(shock_folder: str):
+    current_timestep = int(shock_folder[2:])
     try:
         electron_file_path_location = (f'{SHOCK_DATA_PATH}/hydro_hdf5/T.{current_timestep}'
                                        f'/hydro_electron_{current_timestep}.h5')
@@ -93,4 +93,18 @@ def read_timestep(filename: str):
 
     # File not found or corrupted
     except FileNotFoundError or OSError:
-        print(f"Found corrupted folder {filename}.{current_timestep}")
+        return False
+
+    return True
+
+corrupted_folders = []
+for folder_index, folder_name in enumerate(folders):
+    test = read_timestep(shock_folder=folder_name)
+    if test:
+        print(f"Passed {folder_name}")
+    else:
+        corrupted_folders.append(folder_name)
+        print(f"!!! Found corrupted folder {folder_name} !!!")
+
+print("Corrupted folders:")
+print(corrupted_folders)

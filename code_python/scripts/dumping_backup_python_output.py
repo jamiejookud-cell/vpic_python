@@ -5,12 +5,10 @@ from code_python.scripts.config.folder_paths import FOLDER_PATH
 # Prepare for dumping files
 CODE_FILES_PATH  = f'{FOLDER_PATH}/scripts'
 
-LIST   = [
+LIST = [
     # f"{CODE_FILES_PATH}/config/folder_paths.py",
     f"{CODE_FILES_PATH}/config/parameters.py",
-    f"{CODE_FILES_PATH}/setup/timestep_setup.py",
-    f"{CODE_FILES_PATH}/setup/calculation_setup.py",
-    # f"{CODE_FILES_PATH}/setup/plotting_setup.py",
+    f"{CODE_FILES_PATH}/config/setup.py",
     f"{CODE_FILES_PATH}/preprocessing/get_hdf5_data.py",
     # f"{CODE_FILES_PATH}/preprocessing/plotting_functions.py,
     # f"{CODE_FILES_PATH}/preprocessing/shock_speed_calculation.py,

@@ -1,11 +1,9 @@
 from rich.progress import Progress # Show run pregress
 from code_python.scripts.config.parameters import *
-from code_python.scripts.setup.calculation_setup import *
-from code_python.scripts.setup.plotting_setup import *
+from code_python.scripts.config.setup import *
 from code_python.scripts.preprocessing.get_hdf5_data import folders, folder_count, read_timestep
 from code_python.scripts.preprocessing.plotting_functions import PlotFlowFigure
 import code_python.scripts.preprocessing.shock_speed_calculation as shock_speed_calculation
-from code_python.scripts.preprocessing.custom_advanced_functions import *
 import code_python.scripts.dumping_backup_python_output as backup
 
 DATE_START = backup.datetime.now()
@@ -65,9 +63,7 @@ with (Progress() as progress):
             shock_speed_calculation.shock_times.append(t_peak)
 
         # Change data to box frame (Lorentz transformation frame)
-        if not IS_CALCULATING_LORENTZ_TRANSFORMATION:
-            backup.dump_process("(Disabled 'IS_CALCULATING_LORENTZ_TRANSFORMATION')")
-        else:
+        if IS_CALCULATING_LORENTZ_TRANSFORMATION:
             x0, length = box_frame[0], box_frame[2]
             v = target_velocity
             # Use gamma = 1 / sqrt(1 - v^2), where c = 1 (normalized units)
@@ -136,12 +132,10 @@ with (Progress() as progress):
             cby_prime = gamma * (_cby + v * _cez)
             cbz_prime = gamma * (_cbz - v * _cey)
 
-        if not ENABLE_ADVANCED_CALCULATION:
-            backup.dump_process("(Disabled 'ENABLE_ADVANCED_CALCULATION')")
-        else:
+        if ENABLE_ADVANCED_CALCULATION:
             # TODO: doing derived calculation
             ...
-            backup.dump_process(f"[{folder_index+1}] Finish calculation T.{current_timestep}")
+            # backup.dump_process(f"[{folder_index+1}] Finish calculation T.{current_timestep}")
         # ----------------------------------------------------------------- #
 
         # ------------------------- PLOTTING PART -------------------------
@@ -160,9 +154,10 @@ with (Progress() as progress):
         fig1 = PlotFlowFigure(current_timestep, data=rho_i, vbar=(0, 6), cmap=wtdr, units="di wci")
         fig1.show_lorentz_frame(line_reference_ratio=0.5)
         fig1.draw_line_peak_position()
-        fig1.save("rho_i")
-
+        fig1.save("rho_i" + str(current_timestep))
         # ----------------------------------------------------------------- #
+        progress.update(task, advance=1)
+
 backup.dump_process("▀▄▀▄▀▄ ENDLOOP ▀▄▀▄▀▄")
 
 if IS_CALCULATING_SHOCK_SPEED:
