@@ -5,6 +5,7 @@ SHOCK_DATA_PATH  = "C:/DEV/python/vpic_python/sample_data/V16"
 # code_python
 # ∟ csv_files
 # ∟ figures
+# ∟ videos
 # ∟ records
 # ∟ scripts
 #    ∟ config
