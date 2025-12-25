@@ -21,44 +21,8 @@ def cross_product(a:list[np.ndarray], b:list[np.ndarray], component:str=""):
     cz = ax * by - ay * bx
     return np.array([cx, cy, cz])
 
-
-# grid difference
-# def partial(A: np.ndarray, component:str = ""):
-#     """
-#     Args:
-#         A: 2D numpy array (x,z)
-#         component: x, z
-#
-#     Returns: partial component x or z
-#
-#     """
-#     #    (1) - - - (2) -> x
-#     #     |         |
-#     #     |         |
-#     #     |         |
-#     #    (4) - - - (3)
-#     #     |
-#     #     v
-#     #     z
-#     #
-#     # NOTE: We use numpy.roll to compute ΔU in x and z direction.
-#     # When the indices reach i_max or k_max, it will cause the final index minus the first index.
-#     # For example, ΔU in z direction
-#     # ΔU_z = u[i_max][k_max + 1] - u[i_max][k_max] -> ΔU_z = u[i_max][0] - u[i_max][k_max]
-#     # !!! PLEASE REMEMBER TO REMOVE ERROR ELEMENTS - 2d_array = 2d_array[:-1, :-1] !!!
-#
-#     A1 = A
-#     A2 = np.roll(A1, -1, axis=0) # Shift (x, z)   -> (x+1, z)
-#     A4 = np.roll(A1, -1, axis=1) # shift (x, z)   -> (x, z+1)
-#
-#     # Note, we know in this simulation Δx = Δz = 0.1
-#     if component == "x":
-#         return (A2 - A1) / 0.1
-#     elif component == "z":
-#         return (A4 - A1) / 0.1
-
-# centered grid difference
 def partial(arr_2d: np.ndarray, component: str = ""):
+    # calculate using centered-grid difference
     # [1:-1, 1:-1]
     dx = 0.1
 
@@ -92,6 +56,7 @@ def lorentz_transformation_tensor(ux:np.ndarray, uy:np.ndarray, uz:np.ndarray):
     uu = ux ** 2 + uy ** 2 + uz ** 2 # u.u = u^2
     gamma_u = (1 - uu) ** -0.5
 
+    # arbitrary velocity
     m00 = gamma_u
     m11 = 1 + (gamma_u - 1) * ux * ux / uu
     m22 = 1 + (gamma_u - 1) * uy * uy / uu

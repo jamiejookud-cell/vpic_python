@@ -1,6 +1,8 @@
 import os
 import csv
 import numpy as np
+from code_python.scripts.config.folder_paths import CSV_OUTPUT_PATH
+import code_python.scripts.dumping_backup_python_output as backup
 
 # ---------------------------------------- #
 #            export to CSV file            #
@@ -40,3 +42,5 @@ def export_csv(data, filename, header=None):
             writer.writerow(data)
         elif flag == 2:
             writer.writerows(data)
+
+    backup.dump_process(f"Output '{filename}.csv' to {CSV_OUTPUT_PATH}/{filename}.csv")
