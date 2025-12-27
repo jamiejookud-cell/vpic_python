@@ -19,13 +19,11 @@ def save_figure(filename: str):
 # ---------------------------------------- #
 #            Built-in plotting             #
 # ---------------------------------------- #
+timestep_start = TIMESTEP_RANGE[0]
 class PlotFlowFigure:
-    def __init__(self, timestep, data: np.ndarray, vbar: tuple[float, float], cmap: str, units:str ="", disable_time_start_correction=False):
-        self.start_timestep = TIMESTEP_RANGE[0]
+    def __init__(self, timestep, data: np.ndarray, vbar: tuple[float, float], cmap: str, units:str =""):
         self.data = data
-        if disable_time_start_correction:
-            self.start_timestep = 0
-        self.timestep = timestep - self.start_timestep
+        self.timestep = timestep - timestep_start # Set time = 0 at minimum timestep range input
         self.fig, self.ax = plt.subplots(figsize=(10, 1))
         self.cbar: plt.colorbar
 
@@ -36,7 +34,6 @@ class PlotFlowFigure:
         self.ax.set_yticks(np.linspace(0, y_max, 2))
         self.ax.set_xlabel('X (code unit)')
         self.ax.set_ylabel('Z (code unit)')
-
 
         # Set units
         units = units.split(" ")
@@ -77,14 +74,14 @@ class PlotFlowFigure:
     def _draw_box_frame(self):
         v = target_velocity
         x0, y0, length, height = box_frame
-        x_step = int(v * (1 / dx_de) * dt_wpe * (self.timestep + self.start_timestep))
+        x_step = v * (1 / dx_de) * dt_wpe * self.timestep
 
         self.ax.add_patch(Rectangle((x0 + x_step, y0), length, height, linewidth=4, edgecolor='black', facecolor='none'))
 
     def _draw_line_reference_position(self, reference_position_ratio: float):
         v = target_velocity
         x0, y0, length, height = box_frame
-        x_step = int(v * (1 / dx_de) * dt_wpe * (self.timestep + self.start_timestep))
+        x_step = v * (1 / dx_de) * dt_wpe * self.timestep
 
         x = np.zeros(2) + length * reference_position_ratio
         y = np.linspace(0, height, 2)
@@ -93,7 +90,7 @@ class PlotFlowFigure:
     def draw_line_peak_position(self):
         y_max = self.data.shape[1]
 
-        peak_position = float(np.argmax(np.mean(self.data, axis=1)))
+        peak_position = np.argmax(np.mean(self.data, axis=1))
         x_peak = np.zeros(2) + peak_position
         y = np.linspace(0, y_max, 2)
         self.ax.plot(x_peak, y, color='black')

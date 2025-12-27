@@ -5,13 +5,14 @@ from code_python.scripts.config.folder_paths import FOLDER_PATH, FIG_OUTPUT_PATH
 
 OUTPUT_PATH = f"{FOLDER_PATH}/videos"
 
-filename_prefixes = 'rho'
+filename_prefix = 'rho'
+file_output_name = filename_prefix + "_animation"
 FPS = 1
 
 def create_video_from_images(filename: str):
     # 1. Get and sort images
     image_files = [
-        f for f in os.listdir(FIG_OUTPUT_PATH) if f.endswith('.png') and f.startswith(filename_prefixes)
+        f for f in os.listdir(FIG_OUTPUT_PATH) if f.endswith('.png') and f.startswith(filename_prefix)
     ]
     image_files = natsorted(image_files)
 
@@ -37,4 +38,4 @@ def create_video_from_images(filename: str):
 
     print(f"\n[Done] Video saved to: {save_path}")
 
-create_video_from_images("rho_i_animation")
+create_video_from_images(file_output_name)
