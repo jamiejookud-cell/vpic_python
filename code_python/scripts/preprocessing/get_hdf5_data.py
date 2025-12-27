@@ -58,7 +58,8 @@ cbz = simulation_frame_zero_array.copy()
 
 # NOTE: prime is denoted Lorentz frame
 # derived data used in Lorentz transformation
-box_frame_zero_array = np.zeros((box_frame[2], box_frame[3]))
+length, height = box_frame[2], box_frame[3]
+box_frame_zero_array = np.zeros((length, height))
 
 rho_i_prime = box_frame_zero_array.copy()
 jx_i_prime = box_frame_zero_array.copy()
