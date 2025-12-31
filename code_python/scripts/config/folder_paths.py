@@ -3,7 +3,7 @@ SHOCK_DATA_PATH  = "C:/DEV/python/vpic_python/sample_data/V16"
 
 # FOLDER_PATH hierarchies
 # code_python
-# ∟ csv_files
+# ∟ hdf5_output
 # ∟ figures
 # ∟ videos
 # ∟ records
@@ -13,6 +13,6 @@ SHOCK_DATA_PATH  = "C:/DEV/python/vpic_python/sample_data/V16"
 #    ∟ mainloop
 FOLDER_PATH      = "C:/DEV/local_repo/vpic_python/code_python"
 # CSV files output
-CSV_OUTPUT_PATH  = f'{FOLDER_PATH}/csv_files'
+HDF5_OUTPUT_PATH  = f'{FOLDER_PATH}/hdf5_output'
 # Output dictionary for saving generated figures
 FIG_OUTPUT_PATH  = f'{FOLDER_PATH}/figures'

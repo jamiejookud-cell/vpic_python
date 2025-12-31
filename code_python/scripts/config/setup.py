@@ -1,9 +1,8 @@
 from matplotlib.colors import LinearSegmentedColormap
 
-# CONSTANT
-V_SH: float = 0.05609 # [length (de) / time (wpe-1)]
-# This 0.05609 is the speed of shock moving from right to left.
-
+# CONSTANTS
+shock_speed: float = 0.05609 # [length (de) / time (wpe-1)]
+plasma_speed: float = -0.16 # both electron and ion [length (de) / time (wpe-1)]
 
 # ---------------------------------- Timestep Setup ---------------------------------- #
 TIMESTEP_RANGE: tuple[int, int] = (64584, 142506) # 64584 (time that shock reaches steady state), 142506 (maximum snapshot)
@@ -34,13 +33,13 @@ IS_CALCULATING_SHOCK_SPEED: bool            = False
 # Compute shock speed by tracking rho_i vs timestep. Output is the V_SH value and the tracking graph.
 # *** NOTE: Be sure not to include T.0 or T.XXXXXX that shock hit the boundary in the TIMESTEP_RANGE. ***
 
-box_frame = [-2304, 0, 3072, 1024] # [x0, y0, length, height]
-IS_CALCULATING_LORENTZ_TRANSFORMATION: bool = True
-target_velocity: float = V_SH
+box_frame = [0, 0, 3072, 1024] # [x0, y0, length, height]
+IS_CALCULATING_LORENTZ_TRANSFORMATION: bool = False
+target_velocity: float = plasma_speed
 
-ENABLE_ADVANCED_CALCULATION: bool           = True
+ENABLE_ADVANCED_CALCULATION: bool           = False
 
-IS_EXPORT_DATA_TO_CSV: bool                 = True
+IS_EXPORT_DATA_TO_HDF5: bool                = False
 # ------------------------------------------------------------------------------------ #
 
 

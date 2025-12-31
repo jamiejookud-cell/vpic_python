@@ -5,6 +5,7 @@ from code_python.scripts.preprocessing.get_hdf5_data import *
 from code_python.scripts.preprocessing.plotting_functions import PlotFlowFigure
 import code_python.scripts.preprocessing.shock_speed_calculation as shock_speed_calculation
 from code_python.scripts.preprocessing.custom_advanced_functions import *
+from code_python.scripts.hdf5_handle import *
 import code_python.scripts.dumping_backup_python_output as backup
 
 """
@@ -12,7 +13,7 @@ NOTE:
     Something to do
 """
 DATE_START = backup.datetime.now()
-timestep_start = TIMESTEP_RANGE[0]
+shifted_timestep = TIMESTEP_RANGE[0]
 
 backup.dump_process("▀▄▀▄▀▄ MAINLOOP ▀▄▀▄▀▄")
 with (Progress() as progress):
@@ -60,21 +61,13 @@ with (Progress() as progress):
         cbz = data['cbz']
 
         # ----------------------- CALCULATION PART ----------------------- #
-        # Calculating shock speed by tracking time evolution of peak charge density location
-        if IS_CALCULATING_SHOCK_SPEED:
-            peak_value: float = shock_speed_calculation.get_shock_peak_index(rho_i)
-            x_peak: float = peak_value * dx_de  # [length unit]
-            t_peak: float = (current_timestep - timestep_start) * dt_wpe  # [time unit]
-            shock_speed_calculation.shock_distances.append(x_peak)
-            shock_speed_calculation.shock_times.append(t_peak)
-
         # Change data to box frame (Lorentz transformation frame)
         if IS_CALCULATING_LORENTZ_TRANSFORMATION:
             x0, length = box_frame[0], box_frame[2]
             v = target_velocity
             # Use gamma = 1 / sqrt(1 - v^2), where c = 1 (normalized units)
             gamma = (1 - v ** 2) ** (-1 / 2)
-            x_step = int(v * (1 / dx_de) * dt_wpe * (current_timestep - timestep_start))
+            x_step = int(v * (1 / dx_de) * dt_wpe * (current_timestep - shifted_timestep))
             box_index = [x0 + x_step, (x0 + x_step) + length]
             # Ensure box frame insides simulation frame
             if box_index[0] < 0 or box_index[1] > nx:
@@ -120,7 +113,7 @@ with (Progress() as progress):
             _cby = cby[box_index[0]: box_index[1], :]
             _cbz = cbz[box_index[0]: box_index[1], :]
 
-            # Calculate Lorentz transformation (+x direction)
+            # Calculate Lorentz transformation (x direction)
             rho_i_prime = gamma * (_rho_i - v * _jx_i)
             jx_i_prime = gamma * (_jx_i - _rho_i * v)
             jy_i_prime = _jy_i
@@ -144,6 +137,16 @@ with (Progress() as progress):
             ...
 
             backup.dump_process(f"[{folder_index+1}] Finish calculation T.{current_timestep}")
+
+        # Calculating shock speed by tracking time evolution of peak charge density location
+        if IS_CALCULATING_SHOCK_SPEED:
+            tracking_data = rho_i
+
+            peak_value: float = shock_speed_calculation.get_shock_peak_index(tracking_data)
+            x_peak: float = peak_value * dx_de  # [length unit]
+            t_peak: float = (current_timestep - shifted_timestep) * dt_wpe  # [time unit]
+            shock_speed_calculation.shock_distances.append(x_peak)
+            shock_speed_calculation.shock_times.append(t_peak)
         # ----------------------------------------------------------------- #
 
         # ------------------------- PLOTTING PART -------------------------
@@ -154,7 +157,7 @@ with (Progress() as progress):
         prompt example: units = "de wpe" or "wpe de"
 
         Example usage:
-            fig = PlotFlowFigure(current_timestep, data=rho_i, vbar=(0, 6), cmap=wtdr, units="di wci")
+            fig = PlotFlowFigure(current_timestep, data=rho_i, vbar=(0, 6), cmap=wtdr, units="di wci", shifted_timestep=shifted_timestep)
             fig.show_lorentz_frame() # show outline of box frame
             fig.save(filename="rho_i" + str(current_timestep)) # or fig.show()
         """
@@ -167,7 +170,7 @@ backup.dump_process("▀▄▀▄▀▄ ENDLOOP ▀▄▀▄▀▄")
 if IS_CALCULATING_SHOCK_SPEED:
     shock_speed_calculation.show_graph_of_shock_speed_tracking()
 
-if IS_EXPORT_DATA_TO_CSV:
+if IS_EXPORT_DATA_TO_HDF5:
     # TODO: For export data
     ...
 
