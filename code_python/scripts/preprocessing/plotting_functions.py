@@ -19,13 +19,11 @@ def save_figure(filename: str):
 # ---------------------------------------- #
 #            Built-in plotting             #
 # ---------------------------------------- #
-timestep_start = TIMESTEP_RANGE[0]
 class PlotFlowFigure:
-    def __init__(self, timestep, data: np.ndarray, vbar: tuple[float, float], cmap: str, units:str =""):
+    def __init__(self, timestep, data: np.ndarray, vbar: tuple[float, float], cmap: str, units:str ="", shifted_timestep=0):
         self.data = data
-        self.timestep = timestep - timestep_start # Set time = 0 at minimum timestep range input
+        self.timestep = timestep - shifted_timestep
         self.fig, self.ax = plt.subplots(figsize=(10, 1))
-        self.cbar: plt.colorbar
 
         x_max, y_max = data.shape
         self.ax.set_xlim((0, x_max))
@@ -41,13 +39,13 @@ class PlotFlowFigure:
             if unit == "de":
                 self.ax.xaxis.set_major_formatter(FuncFormatter(lambda val, pos: f"{val * 0.1:.02f}")) # set x_de
                 self.ax.yaxis.set_major_formatter(FuncFormatter(lambda val, pos: f"{val * 0.1:.02f}")) # set y_de
-                self.ax.set_xlabel('X (de)')
-                self.ax.set_ylabel('Z (de)')
+                self.ax.set_xlabel('$X (d_e)$')
+                self.ax.set_ylabel('$Z (d_e)$')
             elif unit == "di":
                 self.ax.xaxis.set_major_formatter(FuncFormatter(lambda val, pos: f"{val * 0.01:.02f}")) # set x_di
                 self.ax.yaxis.set_major_formatter(FuncFormatter(lambda val, pos: f"{val * 0.01:.02f}")) # set y_di
-                self.ax.set_xlabel('X (di)')
-                self.ax.set_ylabel('Z (di)')
+                self.ax.set_xlabel(r'$X (d_i)$')
+                self.ax.set_ylabel(r'$Z (d_i)$')
             elif unit == "wpe":
                 self.ax.text(1, 1.3,f'time: {(self.timestep * dt_wpe):.04f}$\\omega_{{pe}}^{{-1}}$',
                              fontsize=8, ha='right', va='top', transform=self.ax.transAxes)
@@ -63,23 +61,24 @@ class PlotFlowFigure:
         self.cbar = self.fig.colorbar(im, ax=self.ax)
         self.cbar.set_ticks(np.linspace(vbar[0], vbar[1], 5))
 
-    def show_lorentz_frame(self, line_reference_ratio: float = 0):
+    def show_lorentz_frame(self, line_reference_ratio: float = 0, velocity: float = target_velocity):
         """
         Args:
+            velocity: (optional) lorentz frame moving speed; set value the same  as 'target_velocity'
             line_reference_ratio: value between 0 - 1
         """
-        self._draw_box_frame()
-        self._draw_line_reference_position(line_reference_ratio)
+        self._draw_box_frame(velocity)
+        self._draw_line_reference_position(line_reference_ratio, velocity)
 
-    def _draw_box_frame(self):
-        v = target_velocity
+    def _draw_box_frame(self, velocity: float):
+        v = velocity
         x0, y0, length, height = box_frame
         x_step = v * (1 / dx_de) * dt_wpe * self.timestep
 
         self.ax.add_patch(Rectangle((x0 + x_step, y0), length, height, linewidth=4, edgecolor='black', facecolor='none'))
 
-    def _draw_line_reference_position(self, reference_position_ratio: float):
-        v = target_velocity
+    def _draw_line_reference_position(self, reference_position_ratio: float, velocity:float):
+        v = velocity
         x0, y0, length, height = box_frame
         x_step = v * (1 / dx_de) * dt_wpe * self.timestep
 

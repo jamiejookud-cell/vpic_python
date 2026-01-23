@@ -2,11 +2,13 @@ from rich.progress import Progress  # Show run pregress
 from code_python.scripts.config.parameters import *
 from code_python.scripts.config.setup import *
 from code_python.scripts.preprocessing.get_hdf5_data import *
-from code_python.scripts.preprocessing.plotting_functions import PlotFlowFigure
+from code_python.scripts.preprocessing.plotting_functions import PlotFlowFigure, save_figure
 import code_python.scripts.preprocessing.shock_speed_calculation as shock_speed_calculation
 from code_python.scripts.preprocessing.custom_advanced_functions import *
 from code_python.scripts.hdf5_handle import *
 import code_python.scripts.dumping_backup_python_output as backup
+
+import matplotlib.pyplot as plt
 
 """
 NOTE:
@@ -157,7 +159,8 @@ with (Progress() as progress):
         prompt example: units = "de wpe" or "wpe de"
 
         Example usage:
-            fig = PlotFlowFigure(current_timestep, data=rho_i, vbar=(0, 6), cmap=wtdr, units="di wci", shifted_timestep=shifted_timestep)
+            fig = PlotFlowFigure(current_timestep, data=rho_i, vbar=(0, 8), cmap=wtdr, units="di wci", shifted_timestep=shifted_timestep)
+            fig.ax.set_title("rho_i (Simulation frame)")
             fig.show_lorentz_frame() # show outline of box frame
             fig.save(filename="rho_i" + str(current_timestep)) # or fig.show()
         """
@@ -169,9 +172,19 @@ backup.dump_process("▀▄▀▄▀▄ ENDLOOP ▀▄▀▄▀▄")
 
 if IS_CALCULATING_SHOCK_SPEED:
     shock_speed_calculation.show_graph_of_shock_speed_tracking()
+    physical_time_list = np.array(shock_speed_calculation.shock_times) / dt_wpe
+    plt.legend()
+
+    save_figure("shock_speed_tracking")
+    data = {
+        "x_peak": shock_speed_calculation.shock_distances,
+        "t_peak": shock_speed_calculation.shock_times,
+    }
+
+    export_to_hdf5(data, 'peak')
 
 if IS_EXPORT_DATA_TO_HDF5:
     # TODO: For export data
     ...
 
-backup.save(DATE_START)
+backup.save(DATE_START, filename="")

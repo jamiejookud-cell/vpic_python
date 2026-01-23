@@ -69,7 +69,6 @@ def lorentz_transformation_tensor(ux:np.ndarray, uy:np.ndarray, uz:np.ndarray):
     m23 = (gamma_u - 1) * uy * uz / uu
 
     # symmetric matrix: M = M.transpose()
-    # array.shape(4,4,8192,1024)
     return np.array([
         [m00, m01, m02, m03],
         [m01, m11, m12, m13],

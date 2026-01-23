@@ -92,7 +92,7 @@ def read_timestep(shock_folder: str):
             cbz = np.squeeze(hdf5_r[f'/Timestep_{current_timestep}/cbz'][:])
 
     # File not found or corrupted
-    except FileNotFoundError or OSError:
+    except (FileNotFoundError, OSError):
         return False
 
     return True

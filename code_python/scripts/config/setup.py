@@ -1,12 +1,11 @@
 from matplotlib.colors import LinearSegmentedColormap
 
-# CONSTANTS
-shock_speed: float = 0.05609 # [length (de) / time (wpe-1)]
-plasma_speed: float = -0.16 # both electron and ion [length (de) / time (wpe-1)]
-
+# v16_angle75_mach8: 64584, 142506 ~ 1000 snapshots     v_sh = 0.05609
+# v16_angle30_mach8: 120042,  290000 ~ 2000 snapshots
+# 87686.0 + 40000
 # ---------------------------------- Timestep Setup ---------------------------------- #
-TIMESTEP_RANGE: tuple[int, int] = (64584, 142506) # 64584 (time that shock reaches steady state), 142506 (maximum snapshot)
-SPECIFIC_TIMESTEP: int          = -1
+TIMESTEP_RANGE: tuple[int, int] = (-1, -1)
+SPECIFIC_TIMESTEP: int          = 180492
 SKIP_TO_FOLDER: int             = -1
 # TIMESTEP_RANGE:
 # Use -1 to indicate 'no limit' on either side.
@@ -35,7 +34,7 @@ IS_CALCULATING_SHOCK_SPEED: bool            = False
 
 box_frame = [0, 0, 3072, 1024] # [x0, y0, length, height]
 IS_CALCULATING_LORENTZ_TRANSFORMATION: bool = False
-target_velocity: float = plasma_speed
+target_velocity: float = 0.04014
 
 ENABLE_ADVANCED_CALCULATION: bool           = False
 
