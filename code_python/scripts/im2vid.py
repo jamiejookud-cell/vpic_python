@@ -5,9 +5,9 @@ from code_python.scripts.config.folder_paths import FOLDER_PATH, FIG_OUTPUT_PATH
 
 OUTPUT_PATH = f"{FOLDER_PATH}/videos"
 
-filename_prefix = 'rho'
+filename_prefix = 'rho_i'
 file_output_name = filename_prefix + "_animation"
-FPS = 1
+FPS = 30
 
 def create_video_from_images(filename: str):
     # 1. Get and sort images

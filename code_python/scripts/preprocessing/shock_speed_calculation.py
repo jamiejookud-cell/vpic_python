@@ -16,7 +16,7 @@ def get_shock_peak_index(var_2d_array: np.ndarray) -> float:
     var_1d_array = np.mean(var_2d_array, axis=1)
     return float(np.argmax(var_1d_array))
 
-def show_graph_of_shock_speed_tracking(is_save_fig: bool = False):
+def show_graph_of_shock_speed_tracking():
     # Transform this 'list' to 'np.array', able to use the 'curve_fit' function.
     x_range = np.array(shock_distances)
     t_range = np.array(shock_times)
@@ -31,7 +31,7 @@ def show_graph_of_shock_speed_tracking(is_save_fig: bool = False):
     v_sh_fit = float((x_range[-1]) - float(x_range[0])) / float((t_range_fit[-1]) - float(t_range_fit[0]))
     backup.dump_process(f"Physical V_SH_FIT = {v_sh_fit} [length (de) / time (wpe-1)]")
 
-    plt.title("Peak 'rho_i' timestep tracking")
+    plt.title("Peak tracking")
     plt.text(0, 0, f'Physical V_SH_FIT = {v_sh_fit:.05f}', fontsize=8)
     plt.scatter(t_range / dt_wpe, x_range / dx_de, label='peak at each timestep', s=5)
     plt.xlabel("time (code unit)")
@@ -39,10 +39,3 @@ def show_graph_of_shock_speed_tracking(is_save_fig: bool = False):
     plt.plot(t_range_fit / dt_wpe, x_range / dx_de, '--',
              color='orange', label='linear fit line', lw=1)
     plt.legend()
-
-    if is_save_fig:
-        plt.savefig(f'{FIG_OUTPUT_PATH}/shock_speed_tracking.png', format='png', dpi=600,
-                    bbox_inches='tight', pad_inches=0.2)
-        backup.dump_process(f"Saved {FIG_OUTPUT_PATH}/shock_speed_tracking.png")
-    else:
-        plt.show()

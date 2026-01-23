@@ -11,6 +11,11 @@ def export_to_hdf5(data_dict, filename):
         data_dict: {'name': array, 'name': array, ...}
         filename: name of file (without .h5)
     """
+
+    # Handle human error: forget to create data_dict
+    if not isinstance(data_dict, dict):
+        data_dict = {'data': data_dict}
+
     filepath = os.path.join(HDF5_OUTPUT_PATH, f"{filename}.h5")
 
     with h5py.File(filepath, 'w') as hf:
