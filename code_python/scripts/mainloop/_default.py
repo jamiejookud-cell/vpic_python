@@ -126,11 +126,11 @@ with (Progress() as progress):
             jy_e_prime = _jy_e
             jz_e_prime = _jz_e
 
-            cex_prime = gamma * _cex - gamma * gamma * v / (gamma + 1) * (v * _cex)
+            cex_prime = _cex
             cey_prime = gamma * (_cey - v * _cbz)
             cez_prime = gamma * (_cez + v * _cby)
 
-            cbx_prime = gamma * _cbx - gamma * gamma * v / (gamma + 1) * (v * _cbx)
+            cbx_prime = _cbx
             cby_prime = gamma * (_cby + v * _cez)
             cbz_prime = gamma * (_cbz - v * _cey)
 
@@ -145,8 +145,8 @@ with (Progress() as progress):
             tracking_data = rho_i
 
             peak_value: float = shock_speed_calculation.get_shock_peak_index(tracking_data)
-            x_peak: float = peak_value * dx_de  # [length unit]
-            t_peak: float = (current_timestep - shifted_timestep) * dt_wpe  # [time unit]
+            x_peak: float = peak_value # [code length unit]
+            t_peak: float = (current_timestep - shifted_timestep) # [code time unit]
             shock_speed_calculation.shock_distances.append(x_peak)
             shock_speed_calculation.shock_times.append(t_peak)
         # ----------------------------------------------------------------- #
@@ -161,7 +161,7 @@ with (Progress() as progress):
         Example usage:
             fig = PlotFlowFigure(current_timestep, data=rho_i, vbar=(0, 8), cmap=wtdr, units="di wci", shifted_timestep=shifted_timestep)
             fig.ax.set_title("rho_i (Simulation frame)")
-            fig.show_lorentz_frame() # show outline of box frame
+            # fig.show_lorentz_frame() # show outline of box frame
             fig.save(filename="rho_i" + str(current_timestep)) # or fig.show()
         """
         ...
@@ -172,16 +172,14 @@ backup.dump_process("▀▄▀▄▀▄ ENDLOOP ▀▄▀▄▀▄")
 
 if IS_CALCULATING_SHOCK_SPEED:
     shock_speed_calculation.show_graph_of_shock_speed_tracking()
-    physical_time_list = np.array(shock_speed_calculation.shock_times) / dt_wpe
-    plt.legend()
 
     save_figure("shock_speed_tracking")
     data = {
-        "x_peak": shock_speed_calculation.shock_distances,
-        "t_peak": shock_speed_calculation.shock_times,
+        "x_code": shock_speed_calculation.shock_distances,
+        "t_code": shock_speed_calculation.shock_times,
     }
 
-    export_to_hdf5(data, 'peak')
+    export_to_hdf5(data, 'peak_data')
 
 if IS_EXPORT_DATA_TO_HDF5:
     # TODO: For export data
